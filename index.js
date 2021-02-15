@@ -8,14 +8,14 @@ app.use(cors())
 app.use(express.static('build'))
 app.use(morgan('tiny'))
 
-morgan.token('body', (req, res) => JSON.stringify(req.body));
-app.use(morgan(':method :url :status :req[content-length] - :response-time ms :body'));
+morgan.token('body', (req) => JSON.stringify(req.body))
+app.use(morgan(':method :url :status :req[content-length] - :response-time ms :body'))
 
 app.use(express.json())
 
 // GET
 app.get('/', (request, response) => {
-    response.send('<h1>Hello World!</h1>')
+  response.send('<h1>Hello World!</h1>')
 })
 
 app.get('/info', (request, response) => {
@@ -26,7 +26,7 @@ app.get('/info', (request, response) => {
     })
     .catch((error) => {
       console.log('error getting number of people in phonebook.', error.message)
-    }) 
+    })
 })
 
 app.get('/api/persons', (request, response) => {
@@ -51,7 +51,7 @@ app.get('/api/persons/:id', (request, response, next) => {
 // PUT
 app.put('/api/persons/:id', (request, response, next) => {
   const body = request.body
-  
+
   const person = {
     name: body.name,
     number: body.number,
@@ -64,28 +64,28 @@ app.put('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-// POST  
+// POST
 app.post('/api/persons', (request, response, next) => {
   const body = request.body
-  
+
   const person = new Person({
     name: body.name,
     number: body.number
-  }) 
+  })
 
   person.save()
     .then(savedPerson => savedPerson.toJSON())
     .then(savedAndFormattedPerson => {
       response.json(savedAndFormattedPerson)
-    }) 
-    .catch(error => next(error)) 
+    })
+    .catch(error => next(error))
 })
 
 
 // DELETE
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))
