@@ -19,14 +19,21 @@ app.get('/', (request, response) => {
 })
 
 app.get('/info', (request, response) => {
-  response.send(`<p>Phonebook has info for ${persons.length} people</p> 
-                  ${new Date()}`)
+  Person.count({})
+    .then(count => {
+      response.send(`<p>Phonebook has info for ${count} people</p> 
+      ${new Date()}`)
+    })
+    .catch((error) => {
+      console.log('error getting number of people in phonebook.', error.message)
+    }) 
 })
 
 app.get('/api/persons', (request, response) => {
-  Person.find({}).then(persons => {
-    response.json(persons)
-  })
+  Person.find({})
+    .then(persons => {
+      response.json(persons)
+    })
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
@@ -84,7 +91,7 @@ app.post('/api/persons', (request, response) => {
 
 
 // DELETE
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
     .then(result => {
       response.status(204).end()
